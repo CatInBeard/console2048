@@ -1,0 +1,9 @@
+#include <iostream>
+#include <ncurses.h>
+#include <string>
+#include <locale.h>
+#include <cstring>
+#include <cstdlib>
+#include <cmath>
+#include <ctime>
+#include <unistd.h>
