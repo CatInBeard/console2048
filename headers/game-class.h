@@ -43,27 +43,29 @@ class Game{
         int dir;
         char c;
         this->add_random();
+        this->add_random();
         this->draw_game_screen();
+        
         while (true) {
             c=getch();
             if (c == 'w'| c == 'a'| c == 's'| c == 'd'| c == 65| c == 66| c == 67| c == 68) {
-                if(c=='w' | c 65){
+                if(c=='w' | c ==65 ){
                     dir=0;
                 }
-                else if(c=='s' | c 66){
-                    dir=0;
+                else if(c=='s' | c ==66 ){
+                    dir=1;
                 }
-                else if(c=='d' | c 67){
-                    dir=0;
+                else if(c=='d' | c == 67){
+                    dir=2;
                 }
-                else if(c=='a' | c 68){
-                    dir=0;
+                else if(c=='a' | c == 68){
+                    dir=3;
                 }
                 this->move(dir);
                 this->add_random();
                 this->draw_game_screen();
             }
-            napms(50);
+            napms(30);
         }
     }
     bool move(int dir){
@@ -73,15 +75,31 @@ class Game{
         if(dir==0){
             //top
             for(int j=0;j<Game::Size;j++){
-                for(int i=Game::Size-1; i>0; i--){
-                    if(this->grid[i][j]==this->grid[i][j-1]){
-                        grid[i][j]++;
-                        grid[i][j-1]=0;
-                    }
-                }
+                sort=true;
                 while(sort){
                     tryer=false;
-                    for(int i=N-1;i>0;i--){
+                    for(int i=Game::Size-1;i>0;i--){
+                        if(this->grid[i-1][j]==0 & this->grid[i][j]>0){
+                            this->grid[i-1][j]=this->grid[i][j];
+                            this->grid[i][j]=0;
+                            tryer=true;
+                        }
+                    }
+                    if(!tryer){
+                        sort=false;
+                    }
+                }
+                for(int i=Game::Size; i>0; i--){
+                    if(this->grid[i][j]==this->grid[i-1][j] & this->grid[i][j]!=0){
+                        grid[i][j]=0;
+                        grid[i-1][j]++;
+                        this->score+=(int)pow(2,grid[i-1][j]);
+                    }
+                }
+                sort=true;
+                while(sort){
+                    tryer=false;
+                    for(int i=Game::Size-1;i>0;i--){
                         if(this->grid[i-1][j]==0 & this->grid[i][j]>0){
                             this->grid[i-1][j]=this->grid[i][j];
                             this->grid[i][j]=0;
@@ -97,15 +115,32 @@ class Game{
         else if(dir==1){
             //bottom
             for(int j=0;j<Game::Size;j++){
-                for(int i=1; i<Game::Size; i--){
-                    if(this->grid[i][j]==this->grid[i][j-1]){
-                        grid[i][j]++;
-                        grid[i][j-1]=0;
-                    }
-                }
+                sort=true;
                 while(sort){
                     tryer=false;
-                    for(int i=0;i<N-1;i++){
+                    for(int i=0;i<Game::Size-1;i++){
+                        if(this->grid[i][j]>0 & this->grid[i+1][j]==0){
+                            this->grid[i+1][j]=this->grid[i][j];
+                            this->grid[i][j]=0;
+                            tryer=true;
+                        }
+                    }
+                    if(!tryer){
+                        sort=false;
+                    }
+                }
+
+                for(int i=0; i<Game::Size-1; i++){
+                    if(this->grid[i][j]==this->grid[i+1][j] & this->grid[i][j]!=0){
+                        grid[i][j]++;
+                        grid[i+1][j]=0;
+                        this->score+=(int)pow(2,grid[i][j]);
+                    }
+                }
+                sort=true;  
+                while(sort){
+                    tryer=false;
+                    for(int i=0;i<Game::Size-1;i++){
                         if(this->grid[i][j]>0 & this->grid[i+1][j]==0){
                             this->grid[i+1][j]=this->grid[i][j];
                             this->grid[i][j]=0;
@@ -118,11 +153,35 @@ class Game{
                 }
             }
         }
-        else if(dir==3){
+        else if(dir==2){
+            //right
             for(int i=0;i<Game::Size;i++){
+                sort=true;
                 while(sort){
                     tryer=false;
-                    for(int j=0;j<N-1;j++){
+                    for(int j=0;j<Game::Size-1;j++){
+                        if(this->grid[i][j]>0 & this->grid[i][j+1]==0){
+                            this->grid[i][j+1]=this->grid[i][j];
+                            this->grid[i][j]=0;
+                            tryer=true;
+                        }
+                    }
+                    if(!tryer){
+                        sort=false;
+                    }
+                }
+                
+                for(int j=Game::Size; j>0; j--){
+                    if(this->grid[i][j]==this->grid[i][j-1] & this->grid[i][j]!=0){
+                        this->score+=(int)pow(2,grid[i][j-1]);
+                        grid[i][j]=0;
+                        grid[i][j-1]++;
+                    }
+                }
+                sort=true;
+                while(sort){
+                    tryer=false;
+                    for(int j=0;j<Game::Size-1;j++){
                         if(this->grid[i][j]>0 & this->grid[i][j+1]==0){
                             this->grid[i][j+1]=this->grid[i][j];
                             this->grid[i][j]=0;
@@ -135,21 +194,44 @@ class Game{
                 }
             }
         }
-        else if(dir==4){
+        else if(dir==3){
             for(int i=0;i<Game::Size;i++){
+                sort=true;
                 while(sort){
-                tryer=false;
-                for(int j=N-1;j>0;j--){
-                    if(this->grid[i][j-1]==0 & this->grid[i][j]>0){
-                        this->grid[i][j-1]=this->grid[i][j];
-                        this->grid[i][j]=0;
-                        tryer=true;
+                    tryer=false;
+                    for(int j=Game::Size-1;j>0;j--){
+                        if(this->grid[i][j-1]==0 & this->grid[i][j]>0){
+                            this->grid[i][j-1]=this->grid[i][j];
+                            this->grid[i][j]=0;
+                            tryer=true;
+                        }
+                    }
+                    if(!tryer){
+                        sort=false;
                     }
                 }
-                if(!tryer){
-                    sort=false;
+                
+                for(int j=0; j<Game::Size-1; j++){
+                    if(this->grid[i][j]==this->grid[i][j+1] & this->grid[i][j]!=0){
+                        this->score+=(int)pow(2,grid[i][j]);
+                        grid[i][j]++;
+                        grid[i][j+1]=0;
+                    }
                 }
-            }
+                sort=true;
+                while(sort){
+                    tryer=false;
+                    for(int j=Game::Size-1;j>0;j--){
+                        if(this->grid[i][j-1]==0 & this->grid[i][j]>0){
+                            this->grid[i][j-1]=this->grid[i][j];
+                            this->grid[i][j]=0;
+                            tryer=true;
+                        }
+                    }
+                    if(!tryer){
+                        sort=false;
+                    }
+                }
             }
         }
         return ret;
