@@ -79,10 +79,27 @@ class Game{
                 this->add_random();
                 this->draw_game_screen();
             }
+            else if(c=='Q' or c=='q'){
+                endwin();
+                exit(0);
+            }
+            else if(c==8 | c=='B' | c=='b'){
+                for(int i=0;i<Game::Size;i++){
+                    for(int j=0;j<Game::Size;j++){
+                        this->grid[i][j]=this->grid_backup[i][j];
+                    }
+                }
+                this->draw_game_screen();
+            }
             napms(30);
         }
     }
     bool move(int dir){
+        for(int i=0;i<Game::Size;i++){
+            for(int j=0;j<Game::Size;j++){
+                this->grid_backup[i][j]=this->grid[i][j];
+            }
+        }
         bool ret=false;
         bool sort=true;
         bool tryer;
@@ -345,6 +362,7 @@ class Game{
     static const int Top=1;
     bool color=false;
     int grid[Game::Size][Game::Size];
+    int grid_backup[Game::Size][Game::Size];
     int field_size=4;
     int score=0;
     int row;
