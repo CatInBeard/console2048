@@ -30,11 +30,25 @@ class Game{
             for(int j=0;j<Game::Size;j++){
                 this->grid[i][j]=0;
             }
-            for(int i=0;i<Game::Size;i++){
-                this->hr=hr+"-";
-                empty=empty+" ";
-            }
-            empty=empty+"|";
+        }
+        this->alert("Use more than 2 colors: Y/N?");
+        c=getch();
+        if(c=='Y' | c=='y'){
+            start_color();
+            this->color=true;
+            init_pair(1,  COLOR_WHITE,   COLOR_BLACK);
+            init_pair(2,  COLOR_GREEN,   COLOR_BLACK);
+            init_pair(3,  COLOR_YELLOW,  COLOR_BLACK);
+            init_pair(4,  COLOR_BLUE,    COLOR_BLACK);
+            init_pair(5,  COLOR_MAGENTA, COLOR_BLACK);
+            init_pair(6,  COLOR_CYAN,    COLOR_BLACK);
+            init_pair(7,  COLOR_BLUE,    COLOR_WHITE);
+            init_pair(8,  COLOR_WHITE,   COLOR_RED);
+            init_pair(9,  COLOR_BLACK,   COLOR_GREEN);
+            init_pair(10, COLOR_BLUE,    COLOR_YELLOW);
+            init_pair(11, COLOR_WHITE,   COLOR_BLUE);
+            init_pair(12, COLOR_WHITE,   COLOR_MAGENTA);
+            init_pair(13, COLOR_BLACK,   COLOR_CYAN);
         }
         this->new_game();
     }
@@ -273,35 +287,40 @@ class Game{
     void draw_game_screen(){
         this->base_screen();
         int level;
+        if(this->color){
+            color_set(1, NULL);
+        }
         for(int i=0;i<Game::Size*4+1;i++){
-            if(i%Game::Size==0){
-                mvwprintw(stdscr, i+Game::Top, 0, "%s", this->hr.c_str());
-            }
-            else if(i%Game::Size==Game::Size/2){
-                std::string buf="|";
-                for(int j=0;j<Game::Size;j++){
-                    level=this->grid[i/Game::Size][j];
-                    if(level==0){
-                        buf=buf+"    |";
+            for(int j=0;j<Game::Size*5+1;j++){
+                if(i%Game::Size==0){
+                    mvwprintw(stdscr, i+Game::Top, j, "%s", "-");
+                }
+                else{
+                    if(j%(Game::Size+1)==0){
+                        mvwprintw(stdscr, i+Game::Top, j, "%s", "|");
                     }
-                    else if(level==1 | level==2 | level==3){
-                        buf=buf+"  "+std::to_string((int)pow(2,level))+" |";
-                    }
-                    else if(level==4 | level==5 | level==6){
-                        buf=buf+" "+std::to_string((int)pow(2,level))+" |";
-                    }
-                    else if(level==7 | level==8 | level==9){
-                        buf=buf+std::to_string((int)pow(2,level))+" |";
-                    }
-                    else if(level==10 | level==11 | level==12){
-                        buf=buf+std::to_string((int)pow(2,level))+"|";
+                    if(j==Game::Size*5+1){
+                        mvwprintw(stdscr, i+Game::Top, j, "%s", "|");
                     }
                 }
-                mvwprintw(stdscr, i+Game::Top, 0, "%s", buf.c_str());
             }
-            else{
-                mvwprintw(stdscr, i+Game::Top, 0, "%s", this->empty.c_str());
+        }
+        for(int i=0;i<Game::Size;i++){
+            for(int j=0;j<Game::Size;j++){
+                level=this->grid[i][j];
+                if(level!=0){
+                    if(this->color){
+                        color_set(level+1, NULL);
+                    }
+                    std::string str= std::to_string(level);
+                    int len=str.length();
+                    int left=(this->field_size-len)/2;
+                    mvwprintw(stdscr, this->field_size*i+1+2+Game::Top, 1+(this->field_size+1)*j, "%s", (std::to_string((int)pow(2,level))).c_str());
+                }
             }
+        }
+        if(this->color){
+            color_set(1, NULL);
         }
     }
     void drow_central_text(std::string textbuf){
@@ -313,6 +332,9 @@ class Game{
     }
     void base_screen(){
         this->clear_screen();
+        if(this->color){
+            color_set(1, NULL);
+        }
         mvwprintw(stdscr, 0, (10 - strlen(std::to_string(this->score).c_str())) / 2, "%s", std::to_string(this->score).c_str());
     }
     void clear_screen(){
@@ -321,9 +343,9 @@ class Game{
     private:
     static const int Size=4;
     static const int Top=1;
+    bool color=false;
     int grid[Game::Size][Game::Size];
-    std::string hr="-----";
-    std::string empty="|";
+    int field_size=4;
     int score=0;
     int row;
     int col;
